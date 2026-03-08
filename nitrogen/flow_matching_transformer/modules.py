@@ -155,7 +155,6 @@ class BasicTransformerBlock(nn.Module):
             norm_hidden_states,
             encoder_hidden_states=encoder_hidden_states,
             attention_mask=attention_mask,
-            # encoder_attention_mask=encoder_attention_mask,
         )
         if self.final_dropout:
             attn_output = self.final_dropout(attn_output)
@@ -174,11 +173,11 @@ class BasicTransformerBlock(nn.Module):
         return hidden_states
 
 class DiTConfig(BaseModel):
-    num_attention_heads: int = Field(default=8)
-    attention_head_dim: int = Field(default=64)
-    output_dim: int = Field(default=26)
-    num_layers: int = Field(default=12)
-    dropout: float = Field(default=0.1)
+    num_attention_heads: int = Field(...)
+    attention_head_dim: int = Field(...)
+    output_dim: int = Field(...)
+    num_layers: int = Field(...)
+    dropout: float = Field(default=0.2)
     attention_bias: bool = Field(default=True)
     activation_fn: str = Field(default="gelu-approximate")
     num_embeds_ada_norm: Optional[int] = Field(default=1000)
@@ -190,7 +189,7 @@ class DiTConfig(BaseModel):
     compute_dtype: str = Field(default="float32")
     final_dropout: bool = Field(default=True)
     positional_embeddings: Optional[str] = Field(default="sinusoidal")
-    interleave_self_attention: bool = Field(default=False)
+    interleave_self_attention: bool = Field(default=True)
     cross_attention_dim: Optional[int] = Field(default=None, description="Dimension of the cross-attention embeddings. If None, no cross-attention is used.")
 
 
@@ -296,11 +295,11 @@ class DiT(ModelMixin):
 
 
 class SelfAttentionTransformerConfig(BaseModel):
-    num_attention_heads: int = Field(default=8)
-    attention_head_dim: int = Field(default=64)
-    output_dim: int = Field(default=26)
-    num_layers: int = Field(default=12)
-    dropout: float = Field(default=0.1)
+    num_attention_heads: int = Field(...)
+    attention_head_dim: int = Field(...)
+    output_dim: int = Field(...)
+    num_layers: int = Field(...)
+    dropout: float = Field(default=0.2)
     attention_bias: bool = Field(default=True)
     activation_fn: str = Field(default="gelu-approximate")
     num_embeds_ada_norm: Optional[int] = Field(default=1000)
@@ -372,11 +371,11 @@ class CrossAttentionTransformer(ModelMixin, ConfigMixin):
     @register_to_config
     def __init__(
         self,
-        num_attention_heads: int = 8,
+        num_attention_heads: int = 16,
         attention_head_dim: int = 64,
-        output_dim: int = 26,
-        num_layers: int = 12,
-        dropout: float = 0.1,
+        output_dim: int = 1024,
+        num_layers: int = 8,
+        dropout: float = 0.2,
         attention_bias: bool = True,
         activation_fn: str = "gelu-approximate",
         num_embeds_ada_norm: Optional[int] = 1000,

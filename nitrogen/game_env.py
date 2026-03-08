@@ -1,5 +1,6 @@
 import time
 import platform
+import ctypes
 
 import pyautogui
 import dxcam
@@ -20,6 +21,11 @@ import win32process
 import win32gui
 import win32api
 import win32con
+
+try:
+    ctypes.windll.shcore.SetProcessDpiAwareness(1)
+except Exception:
+    ctypes.windll.user32.SetProcessDPIAware()
 
 
 def get_process_info(process_name):
@@ -55,7 +61,8 @@ def get_process_info(process_name):
                     # On 64-bit Windows: WOW64 means "Windows 32-bit on Windows 64-bit", i.e. a 32-bit process
                     architecture = "x86" if is_wow64 else "x64"
                 except:
-                    architecture = "unknown"
+                    # Default to x64 for modern games (most likely)
+                    architecture = "x64"
 
                 # Find windows associated with this PID
                 windows = []
@@ -468,15 +475,27 @@ class GamepadEnv(Env):
 
         self.game_window.activate()
         l, t, r, b = self.game_window.left, self.game_window.top, self.game_window.right, self.game_window.bottom
-        self.bbox = (l, t, r - l, b - t)
 
         # Initialize speedhack client if using DLL injection
-        self.speedhack_client = xsh.Client(process_id=self.game_pid, arch=self.game_arch)
+        # Skip if architecture is unknown (some games may not report it correctly)
+        if self.game_arch in ['x64', 'x86']:
+            try:
+                self.speedhack_client = xsh.Client(process_id=self.game_pid, arch=self.game_arch)
+            except Exception as e:
+                print(f"Warning: Could not initialize speedhack: {e}")
+                self.speedhack_client = None
+        else:
+            print(f"Warning: Unknown architecture '{self.game_arch}', speedhack disabled")
+            self.speedhack_client = None
 
         # Get the screenshot backend
         if screenshot_backend == "dxcam":
+            # dxcam uses (left, top, right, bottom)
+            self.bbox = (l, t, r, b)
             self.screenshot_backend = DxcamScreenshotBackend(self.bbox, self.env_fps)
         elif screenshot_backend == "pyautogui":
+            # pyautogui uses (left, top, width, height)
+            self.bbox = (l, t, r - l, b - t)
             self.screenshot_backend = PyautoguiScreenshotBackend(self.bbox)
         else:
             raise ValueError("Unsupported screenshot backend. Use 'dxcam' or 'pyautogui'.")
@@ -498,13 +517,15 @@ class GamepadEnv(Env):
         """
         Unpause the game using the specified method.
         """
-        self.speedhack_client.set_speed(1.0)
+        if self.speedhack_client:
+            self.speedhack_client.set_speed(1.0)
 
     def pause(self):
         """
         Pause the game using the specified method.
         """
-        self.speedhack_client.set_speed(0.0)
+        if self.speedhack_client:
+            self.speedhack_client.set_speed(0.0)
 
     def perform_action(self, action, duration):
         """
@@ -565,7 +586,7 @@ class GamepadEnv(Env):
         """
         Close the environment and release any resources.
         """
-        pass  # Implement env close logic here
+        return None
 
     def render(self):
         """

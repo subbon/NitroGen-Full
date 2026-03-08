@@ -9,13 +9,9 @@ description = "VLM-based game playing agent"
 readme = "README.md"
 requires-python = ">=3.10"
 
-# Default: everything
+# Default: core dependencies for inference
 dependencies = [
-    # Shared
     "numpy",
-    "pyzmq",
-    
-    # Serve
     "torch",
     "pyyaml",
     "einops",
@@ -23,8 +19,6 @@ dependencies = [
     "pydantic",
     "diffusers",
     "polars",
-    
-    # Play (Windows-only deps marked)
     "pillow",
     "opencv-python",
     "pyautogui",
@@ -39,21 +33,16 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-serve = [
-    "numpy",
-    "pyzmq",
-    "torch",
-    "pyyaml",
-    "einops",
-    "transformers",
-    "pydantic",
-    "diffusers",
-    "polars",
+train = [
+    "bitsandbytes",
+    "scikit-learn",
+    "torchvision",
+    "tqdm",
+    "PyTurboJPEG",
 ]
 
 play = [
     "numpy",
-    "pyzmq",
     "pillow",
     "opencv-python",
     "pyautogui",
@@ -65,6 +54,8 @@ play = [
     "vgamepad",
     "pywin32",
     "xspeedhack",
+    "pygame",
+    "keyboard",
 ]
 
 [tool.setuptools.packages.find]

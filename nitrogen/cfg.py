@@ -6,8 +6,8 @@ from nitrogen.mm_tokenizers import NitrogenTokenizerConfig
 class ModalityConfig(BaseModel):
     frame_per_sample: int = 1 # number of context frames per sample
     frame_spacing: int | None = None # how many frames to skip between each frame. If None, use action_per_chunk
-    action_per_chunk: int = 8
-    action_shift: int = 1 # how many actions to skip between frame[i] and action_chunk[i]
+    action_per_chunk: int = Field(...)
+    action_shift: int = Field(...)
     action_interleaving: bool = False # if True, action chunks will be interleaved with context frames and used by the model to predict the next actions
     token_set: str = "new"
 
