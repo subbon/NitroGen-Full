@@ -461,7 +461,7 @@ class NitroGen(torch.nn.Module):
         with torch.no_grad():
             weights = torch.ones_like(actions)
             # Upweight non-neutral targets so sparse actions matter more during fine-tuning.
-            weights[actions.abs() > 0.1] = 3.5
+            weights[actions.abs() > 0.1] = 1.0
             
         raw_loss = raw_loss * mask * weights
         action_loss = (has_real_action[:, None, None] * raw_loss).sum() / (mask.sum() + 1e-6)
