@@ -34,37 +34,33 @@ This fork changes that workflow in several practical ways:
 
 ## Current Training Snapshot
 
-The latest training:
+### Latest Training (1.0x weights — `final_model.pt`)
 
-- **Base checkpoint**: **`ng.pt`** (original NitroGen foundation model, compatible with this fork)
+- **Base checkpoint**: **`ng.pt`**
 - **Dataset size**: **34 runs**, **681,203 samples**
 - **Train/val split**: **613,083 / 68,120**
 - **Trainable parameters**: **177,675,289 / 493,631,513** (36.0%)
-- **Training environment**: **WSL + RTX 4070 Ti Super** (~13GB VRAM usage with current settings)
+- **Training environment**: **WSL + RTX 4070 Ti Super** (~13GB VRAM usage)
 - **Schedule**: **OneCycle**
 - **Total epochs**: **10**
 - **Best validation loss**: **`0.0160`** (EMA checkpoint, epoch 10)
-- **Best Macro F1**: **45.49%** (`final_model_35.pt`, per benchmark)
-- **Final log entry date**: **March 9, 2026**
+- **Best Macro F1**: **44.61%** (per benchmark)
+- **Date**: **March 9, 2026**
 
-### Model Comparison Results
+### Previous Training (3.5x weights — `final_model_35.pt`)
 
-**Benchmarked on validation set** (200 batches, 2 runs per model):
+- **Loss Weight**: **3.5x** for active actions
+- **Best validation loss**: **`0.0209`**
+- **Best Macro F1**: **45.49%** (per benchmark)
+- **Date**: **March 6, 2026**
 
-| Model | Loss | Macro F1 | Notes |
-|-------|------|----------|-------|
-| `ng.pt` (base) | **0.0491** | **7.24%** | Original foundation model |
-| **`final_model.pt`** | **0.0158** | **44.61%** | **Recommended** — best loss, standard weights |
-| **`final_model_35.pt`** | **0.0209** | **45.49%** | **Best Macro F1** — upweighted actions |
+### Benchmark Results
 
-**Key findings:**
+**Key findings** (benchmarked on validation set, 200 batches, 2 runs per model):
 - Fine-tuned models show massive improvement over base (**7.24% → 44-45% Macro F1**)
-- **`final_model.pt`** achieves best loss (**0.0158**) with competitive F1 (**44.61%**) — recommended
+- **`final_model.pt`** achieves best loss (**0.0158**) with competitive F1 (**44.61%**) — recommended for gameplay
 - **`final_model_35.pt`** achieves best **Macro F1: 45.49%** but higher loss due to aggressive upweighting
 - 3.5x model has higher recall on rare actions but may be less predictable in practice
-
-- **`final_model.pt`** — Standard **1.0x** loss weights (recommended for gameplay)
-- **`final_model_35.pt`** — **3.5x** upweighted version (higher F1 but less stable)
 
 ## Available Models
 
